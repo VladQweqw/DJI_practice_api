@@ -1,19 +1,22 @@
 package com.example.drone_api.Drone;
 
+import com.example.drone_api.Owner.Owner;
+import com.example.drone_api.Owner.OwnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class DroneService {
     private final DroneRepository droneRepository;
+    private final OwnerRepository ownerRepository;
 
     @Autowired
-    DroneService(DroneRepository droneRepository) {
+    DroneService(DroneRepository droneRepository, OwnerRepository ownerRepository) {
         this.droneRepository = droneRepository;
+        this.ownerRepository = ownerRepository;
     }
 
     public List<Drone> getDrones() {
@@ -32,10 +35,29 @@ public class DroneService {
         if(found.isPresent()) {
             throw new IllegalStateException("Drone with the same name already exists");
         }else {
+
             droneRepository.save(drone_obj);
             return drone_obj;
         }
 
+    }
+
+    public Drone setOwner(Long drone_id, Long owner_id) {
+        Drone drone = droneRepository.findById(drone_id).orElseThrow(() -> {
+            throw new IllegalStateException("Drone ID is invalid");
+        });
+
+        Owner owner = ownerRepository.findById(owner_id).orElseThrow(() -> {
+            throw new IllegalStateException("Owner ID is invalid");
+        });
+
+        if(!owner.getDrones_owned().contains(drone)) {
+            owner.addDrone(drone);
+        }
+
+        drone.setOwner(owner);
+        ownerRepository.save(owner);
+        return droneRepository.save(drone);
     }
 
     public Drone updateDrone(Long id, DroneUpdate kilometers) {

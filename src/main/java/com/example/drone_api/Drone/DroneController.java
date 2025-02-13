@@ -30,6 +30,15 @@ public class DroneController {
         return droneService.createDrone(drone);
     }
 
+    @PutMapping("{drone-id}/owners/{owner-id}")
+    public Drone postDrone(
+            @PathVariable("drone-id") Long drone_id,
+            @PathVariable("owner-id") Long owner_id
+
+    ) {
+        return droneService.setOwner(drone_id, owner_id);
+    }
+
     @PutMapping(path = "{drone-id}")
     public Drone putDrone(
             @PathVariable("drone-id") Long id,

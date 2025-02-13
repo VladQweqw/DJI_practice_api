@@ -11,21 +11,14 @@ import java.time.temporal.ChronoUnit;
 public class Drone {
 
     @Id
-    @SequenceGenerator(
-            name="drone-id",
-            sequenceName = "drone-id",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "drone-id"
-    )
+    @GeneratedValue
     private Long id;
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name="owner-id")
-    private Owner owner_id;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="owner_id", referencedColumnName = "id")
+    private Owner owner;
     private Double kilometers_traveled = 0.0;
     private Integer flights = 0;
     private LocalDate fabrication_date;
@@ -36,12 +29,12 @@ public class Drone {
 
     }
 
-    public void setOwner_id(Owner owner_id) {
-        this.owner_id = owner_id;
+    public void setOwner(Owner owner) {
+        this.owner = owner;
     }
 
-    public Owner getOwner_id() {
-        return owner_id;
+    public Owner getOwner() {
+        return owner;
     }
 
     public Drone(String name, LocalDate fabrication_date) {

@@ -1,34 +1,32 @@
 package com.example.drone_api.Owner;
 
 import com.example.drone_api.Drone.Drone;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table
 public class Owner {
     @Id
-    @SequenceGenerator(
-            name="owner-id",
-            sequenceName = "owner-id",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "owner-id"
-    )
+    @GeneratedValue
     private Long id;
 
     private String name;
-    @OneToMany(mappedBy = "drone-id")
-    private List<Drone> drones_owned;
+    @JsonIgnoreProperties("owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Set<Drone> drones_owned = new HashSet<>();
+
     private LocalDate dob;
 
     public void setId(Long id) {
         this.id = id;
     }
+
 
     @Override
     public String toString() {
@@ -51,13 +49,17 @@ public class Owner {
     public void setName(String name) {
         this.name = name;
     }
-
-    public void setDrones_owned(Drone drone) {
-        this.drones_owned.add(drone);
+    public void setDrones_owned(Set<Drone> drones_owned) {
+        this.drones_owned = drones_owned;
     }
+
 
     public void setDob(LocalDate dob) {
         this.dob = dob;
+    }
+
+    public void addDrone(Drone drone) {
+        this.drones_owned.add(drone);
     }
 
     public Long getId() {
@@ -68,7 +70,7 @@ public class Owner {
         return name;
     }
 
-    public List<Drone> getDrones_owned() {
+    public Set<Drone> getDrones_owned() {
         return drones_owned;
     }
 
